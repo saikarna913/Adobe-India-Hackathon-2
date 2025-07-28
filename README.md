@@ -22,6 +22,10 @@ This project extracts and prioritizes the most relevant sections from a collecti
 └── test/
     └── (generated JSON outlines)
 ```
+## Clone the repo
+```sh
+git clone https://github.com/saikarna913/Adobe-India-Hackathon-2.git
+```
 
 ## Build the Docker Image
 
