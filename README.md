@@ -5,7 +5,7 @@ This project extracts and prioritizes the most relevant sections from a collecti
 ## Prerequisites
 
 - [Docker](https://www.docker.com/products/docker-desktop) installed on your machine
-- Place your PDF files in the `pdfs/` directory
+- Place your PDF files in the `pdf/` directory
 
 ## Project Structure
 
@@ -34,17 +34,15 @@ docker build -t intelligent-document-analyst .
 Replace the persona and job description as needed.
 
 ```sh
-docker run --rm ^
-  -v "%cd%/pdfs:/app/pdfs" ^
-  -v "%cd%/test:/app/test" ^
-  -v "%cd%/output.json:/app/output.json" ^
-  intelligent-document-analyst ^
-  python main.py ^
-    --persona "Travel Planner" ^
-    --job "Plan a trip of 4 days for a group of 10 college friends." ^
-    --output output.json
+docker run --rm \
+  -v "$PWD/pdfs:/app/pdfs" \
+  -v "$PWD/test:/app/test" \
+  -v "$PWD/output.json:/app/output.json" \
+  intelligent-document-analyst \
+  --persona "Travel Planner" \
+  --job "Plan a trip of 4 days for a group of 10 college friends." \
+  --output output.json
 ```
-*(On Windows CMD/PowerShell; use `/` instead of `^` for Linux/Mac)*
 
 - This will:
   1. Extract outlines from all PDFs in `pdfs/` into `test/` as JSON files.
@@ -63,3 +61,5 @@ docker run --rm ^
 - If you encounter JSON errors, check that the `test/` folder is cleared or contains only valid outline JSONs.
 
 ---
+
+**For any issues, please open an issue in this repository.**

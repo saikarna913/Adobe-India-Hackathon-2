@@ -28,8 +28,7 @@ output.json
 *.tmp
 *.bak
 
-# PDF and data
-pdfs/*.pdf
+
 
 # Ignore test outputs
 /test/*.json

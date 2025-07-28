@@ -6,8 +6,6 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from datetime import datetime
 
-MODEL_NAME = "all-MiniLM-L6-v2"  # ~80MB, fits constraints
-
 class DocumentSection:
     def __init__(self, document, page_num, title, text):
         self.document = document
@@ -27,7 +25,7 @@ class DocumentAnalyzer:
         self.persona = persona
         self.job = job
         self.json_folder = json_folder
-        self.model = SentenceTransformer(MODEL_NAME)
+        self.model = SentenceTransformer('./model') 
         self.sections = []
         self.sub_sections = []
         self.input_documents = []

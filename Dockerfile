@@ -3,14 +3,15 @@ FROM python:3.9-slim
 WORKDIR /app
 COPY . .
 
-# Create and activate venv, install requirements, pre-download model
-RUN python -m venv /app/venv && \
-    /app/venv/bin/pip install --upgrade pip && \
-    /app/venv/bin/pip install --no-cache-dir -r requirements.txt && \
-    /app/venv/bin/python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')" && \
+# Install dependencies and pre-download model
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc python3-dev wget && \
+    pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')" && \
     apt-get remove -y gcc python3-dev wget && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-# Entrypoint for semantic analysis (can be overridden)
-ENTRYPOINT ["/app/venv/bin/python", "semantic_analyzer.py"]
+# Entrypoint for full pipeline (outline extraction + semantic analysis)
+ENTRYPOINT ["python", "main.py"]
