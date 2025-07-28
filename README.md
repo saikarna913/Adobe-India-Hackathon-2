@@ -44,7 +44,7 @@ docker run --rm -v "$PWD/pdf:/app/pdf" -v "$PWD/test:/app/test" -v "$PWD/output:
 - This will:
   1. Extract outlines from all PDFs in `pdfs/` into `test/` as JSON files.
   2. Run semantic analysis on the outlines.
-  3. Produce `output.json` with the results.
+  3. Produce `output.json` in output folder with the results.
 
 ## Notes
 
