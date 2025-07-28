@@ -35,7 +35,7 @@ docker build -t intelligent-document-analyst .
 
 ## Run the Pipeline
 
-Replace the persona and job description as needed.
+Replace the **persona** and **job description** as needed.
 
 ```sh
 docker run --rm -v "$PWD/pdf:/app/pdf" -v "$PWD/test:/app/test" -v "$PWD/output.json:/app/output.json" intelligent-document-analyst --persona "Travel Planner" --job "Plan a trip of 4 days for a group of 10 college friends." --output output.json
