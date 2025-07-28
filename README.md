@@ -1,29 +1,65 @@
-# Approach Explanation
+# Intelligent Document Analyst - Docker Setup
 
-## Overview
-This system is designed to act as an intelligent document analyst, extracting and prioritizing the most relevant sections from a collection of documents based on a specific persona and their job-to-be-done. The solution is generic and can handle diverse document types, personas, and tasks.
+This project extracts and prioritizes the most relevant sections from a collection of documents based on a specific persona and job-to-be-done, using semantic embeddings and cosine similarity.
 
-## Methodology
-1. **Document Parsing**: The system accepts 3-10 PDF documents. Each document is parsed to extract its outline, including titles and subheadings, along with their page numbers.
-2. **Metadata Extraction**: The input includes the document collection, persona definition (role and expertise), and a concrete job-to-be-done. These are stored as metadata for traceability and reproducibility.
-3. **Semantic Embedding**: For each outline element (title/subheading), as well as the persona and job description, semantic embeddings are generated using a compact transformer-based model (e.g., MiniLM or DistilBERT) that fits within the 1GB model size constraint and runs efficiently on CPU.
-4. **Cosine Similarity Analysis**: The system computes cosine similarity between each outline element and the persona/job description embeddings. This quantifies relevance.
-5. **Section Prioritization**: Sections are ranked by similarity scores. The most relevant sections are selected and assigned an importance rank.
-6. **Sub-section Analysis**: For each selected section, the system refines the text, checks page number constraints, and outputs the most relevant sub-sections.
-7. **Output Generation**: The final output includes metadata, extracted sections (with document, page number, section title, and importance rank), and sub-section analysis (with refined text and page constraints).
+## Prerequisites
 
-## Constraints & Optimization
-- **Model Selection**: Only models ≤1GB are used (e.g., sentence-transformers/all-MiniLM-L6-v2 or distilbert-base-uncased), ensuring CPU-only inference and fast processing.
-- **No Internet Access**: All models and dependencies are pre-installed in the Docker image; no downloads at runtime.
-- **Performance**: The pipeline is optimized to process 3-5 documents in ≤60 seconds on CPU.
+- [Docker](https://www.docker.com/products/docker-desktop) installed on your machine
+- Place your PDF files in the `pdfs/` directory
 
-## Execution
-- The system is containerized using Docker. All dependencies are installed offline.
-- Execution instructions are provided in the README and Dockerfile.
+## Project Structure
 
-## Extensibility
-- The approach is domain-agnostic and can be extended to other document types, personas, and tasks.
+```
+.
+├── Dockerfile
+├── requirements.txt
+├── main.py
+├── src/
+│   ├── outline.py
+│   └── semantic_analyzer.py
+├── pdfs/
+│   └── (your PDF files)
+└── test/
+    └── (generated JSON outlines)
+```
+
+## Build the Docker Image
+
+```sh
+docker build -t intelligent-document-analyst .
+```
+
+## Run the Pipeline
+
+Replace the persona and job description as needed.
+
+```sh
+docker run --rm ^
+  -v "%cd%/pdfs:/app/pdfs" ^
+  -v "%cd%/test:/app/test" ^
+  -v "%cd%/output.json:/app/output.json" ^
+  intelligent-document-analyst ^
+  python main.py ^
+    --persona "Travel Planner" ^
+    --job "Plan a trip of 4 days for a group of 10 college friends." ^
+    --output output.json
+```
+*(On Windows CMD/PowerShell; use `/` instead of `^` for Linux/Mac)*
+
+- This will:
+  1. Extract outlines from all PDFs in `pdfs/` into `test/` as JSON files.
+  2. Run semantic analysis on the outlines.
+  3. Produce `output.json` with the results.
+
+## Notes
+
+- The model is pre-downloaded in the Docker image for offline use.
+- All processing is CPU-only and fits within 1GB model size.
+- No internet access is required at runtime.
+
+## Troubleshooting
+
+- Ensure your `pdfs/` folder contains valid PDF files.
+- If you encounter JSON errors, check that the `test/` folder is cleared or contains only valid outline JSONs.
 
 ---
-
-This methodology ensures robust, efficient, and interpretable document analysis tailored to user-defined personas and tasks.

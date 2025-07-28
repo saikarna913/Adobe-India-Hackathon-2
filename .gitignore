@@ -15,8 +15,6 @@ venv/
 # Docker
 *.log
 *.pid
-*.db
-*.sqlite3
 
 # OS
 .DS_Store

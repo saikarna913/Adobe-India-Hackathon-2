@@ -19,7 +19,7 @@ def merge_outlines(json1, json2):
 
 def main():
     pdf_dir = os.path.join('.', 'pdf')
-    output_dir = os.path.join('.', 'outputs')
+    output_dir = os.path.join('.', 'test')
     os.makedirs(output_dir, exist_ok=True)
 
     pdf_files = [f for f in os.listdir(pdf_dir) if f.lower().endswith('.pdf')]
