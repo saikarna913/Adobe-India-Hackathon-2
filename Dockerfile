@@ -1,14 +1,13 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 COPY . .
 
-# Install dependencies and pre-download model
+# Install dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc python3-dev wget && \
     pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
-    python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')" && \
     apt-get remove -y gcc python3-dev wget && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*

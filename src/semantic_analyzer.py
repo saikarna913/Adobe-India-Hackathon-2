@@ -2,9 +2,9 @@ import os
 import json
 import glob
 import numpy as np
+from datetime import datetime
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-from datetime import datetime
 
 class DocumentSection:
     def __init__(self, document, page_num, title, text):
@@ -25,7 +25,16 @@ class DocumentAnalyzer:
         self.persona = persona
         self.job = job
         self.json_folder = json_folder
-        self.model = SentenceTransformer('./model') 
+
+        # ✅ Load local SentenceTransformer model
+        model_path = os.path.abspath("./model")
+        if not os.path.isdir(model_path):
+            raise FileNotFoundError(f"Model folder not found at {model_path}")
+        try:
+            self.model = SentenceTransformer(model_path)
+        except Exception as e:
+            raise RuntimeError(f"Failed to load local model from {model_path}: {str(e)}")
+
         self.sections = []
         self.sub_sections = []
         self.input_documents = []
@@ -53,9 +62,11 @@ class DocumentAnalyzer:
         persona_job_text = f"{self.persona} {self.job}"
         persona_job_emb = self.model.encode([persona_job_text])[0]
         all_sections = []
+
         json_files = glob.glob(os.path.join(self.json_folder, "*.json"))
         self.input_documents = [os.path.basename(f) for f in json_files]
         self.metadata["input_documents"] = self.input_documents
+
         for json_path in json_files:
             doc_title, outlines = self.extract_outline_from_json(json_path)
             for outline in outlines:
@@ -70,10 +81,10 @@ class DocumentAnalyzer:
                 )
                 section.importance_rank = score
                 all_sections.append(section)
-        # Sort and select top N
+
         all_sections.sort(key=lambda x: x.importance_rank, reverse=True)
         self.sections = all_sections[:10]  # Top 10 relevant sections
-        # Sub-section analysis (refined text)
+
         for section in self.sections:
             refined_text = self.refine_text(section.text, persona_job_emb)
             self.sub_sections.append(SubSectionAnalysis(
@@ -83,7 +94,6 @@ class DocumentAnalyzer:
             ))
 
     def refine_text(self, text, persona_job_emb):
-        # Split into sentences, rank by similarity
         sentences = [s.strip() for s in text.split(". ") if s.strip()]
         if not sentences:
             return ""
@@ -122,6 +132,7 @@ if __name__ == "__main__":
     parser.add_argument("--job", required=True, help="Job to be done")
     parser.add_argument("--output", default="output.json", help="Output file")
     args = parser.parse_args()
+
     analyzer = DocumentAnalyzer(args.persona, args.job, args.json_folder)
     analyzer.analyze()
     analyzer.output_results(args.output)
